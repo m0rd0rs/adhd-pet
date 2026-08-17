@@ -41,3 +41,28 @@
 - Complex Maintenance: High-maintenance mechanics (e.g., demanding daily feeding schedules) quickly turn into a source of guilt or executive overwhelm.
 
 - Hyper-Interactive Minigames: Built-in games that take the user away from their primary desktop work encourage procrastination.
+
+
+### Project setting checklist
+- Rendering Method -> Compatibility
+- Project -> Project settings
+- Enable Advanced
+- Display -> Window
+- Mode: Windowed
+- Borderless: On
+- Transparent: On
+- Always on top: On
+- Per Pixel Transparency -> Allowed: True
+- Rendering -> Viewport
+- Transparent Background: On
+
+### In case debug window doesn't apply transparency settings
+- Press Ctrl+F4 or click on "Game" at the editor top-center.
+- Click on Embedding Options (Last icon on the Game window bar)
+- Embed Game on Next Play: Off
+- Press F5 again to run the project.
+- After being satisfied with debugging - press F8 to exit the app.
+
+https://elthen.itch.io/2d-pixel-art-squirrel-sprites
+https://www.pixtastock.com/illustration/112311474
+https://tenor.com/view/squirrel-pixel-art-monster-red-gif-18235692
