@@ -63,6 +63,21 @@
 - Press F5 again to run the project.
 - After being satisfied with debugging - press F8 to exit the app.
 
+### Make the whole thing scale to full screen
+- Project -> Project settings -> Advanced
+- Display -> Window -> Mode -> Fullscreen
+- Stretch -> Mode -> viewport
+- Aspect -> expand
+### Programatically:
+```
+func toggle_fullscreen() -> void:
+	var current_mode = DisplayServer.window_get_mode()
+	if current_mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+```
+
 https://elthen.itch.io/2d-pixel-art-squirrel-sprites
 https://www.pixtastock.com/illustration/112311474
 https://tenor.com/view/squirrel-pixel-art-monster-red-gif-18235692
