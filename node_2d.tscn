@@ -3,9 +3,20 @@
 [ext_resource type="Script" uid="uid://ddounavjicruc" path="res://node_2d.gd" id="1_0e48y"]
 [ext_resource type="Texture2D" uid="uid://el3gdny7adw0" path="res://icon.svg" id="2_epypp"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0e48y"]
+size = Vector2(124, 124)
+
 [node name="Node2D" type="Node2D" unique_id=769144320]
 script = ExtResource("1_0e48y")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1785164922]
-position = Vector2(331, 216)
+position = Vector2(1798, 970)
 texture = ExtResource("2_epypp")
+
+[node name="Area2D" type="Area2D" parent="Sprite2D" unique_id=504680869]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D/Area2D" unique_id=1903859968]
+position = Vector2(0, -1)
+shape = SubResource("RectangleShape2D_0e48y")
+
+[connection signal="input_event" from="Sprite2D/Area2D" to="." method="_on_pet_clicked"]

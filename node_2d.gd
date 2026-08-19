@@ -1,15 +1,15 @@
 extends Node2D
 
 @onready var sprite: Sprite2D = $Sprite2D
+var visible_window: bool = true
 
 func _ready() -> void:
-	# 1. Cleanly initialize the background transparency via code to ensure system hookup
-	get_viewport().transparent_bg = true # 2.1.1, 2.2.5
-	
-	# 2. Automatically generate the click boundary around your actual sprite image
+	toggle_transparency()
 	update_click_boundary()
+#	toggle_fullscreen()
 
 func update_click_boundary() -> void:
+	'Arrange the click-through for the pixels outside our pet'
 	if sprite.texture:
 		# Get the pixel data from your sprite image
 		var img: Image = sprite.texture.get_image()
@@ -40,3 +40,25 @@ func update_click_boundary() -> void:
 		else:
 			# If your sprite vanishes or is empty, make the entire window click-through
 			DisplayServer.window_set_mouse_passthrough([])
+
+func toggle_fullscreen() -> void:
+	'Toggles fullscreen'
+	var current_mode = DisplayServer.window_get_mode()
+	if current_mode == DisplayServer.WINDOW_MODE_FULLSCREEN:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+
+func toggle_transparency() -> void:
+	get_tree().root.transparent_bg = visible_window
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, visible_window)
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_ALWAYS_ON_TOP, visible_window)
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_TRANSPARENT, visible_window)
+
+
+func _on_pet_clicked(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			visible_window = !visible_window
+			toggle_transparency()
+			get_viewport().set_input_as_handled() 
