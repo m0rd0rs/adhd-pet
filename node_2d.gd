@@ -82,3 +82,7 @@ func _on_pet_clicked(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
   3. State Consistency:
       • Uses is_transparent to clearly track whether the desktop pet overlay mode is active.
 """
+
+
+func _on_ui_reality_check_toggle() -> void:
+	pass # Replace with function body.
