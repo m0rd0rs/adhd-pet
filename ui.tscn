@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://clwdv7k6kbqqq"]
+
+[node name="UI" type="CanvasLayer" unique_id=1708106587]
+
+[node name="Dinger" type="HBoxContainer" parent="." unique_id=1843404344]
+offset_left = 46.0
+offset_top = 30.0
+offset_right = 1879.0
+offset_bottom = 97.0
+alignment = 1
+
+[node name="Label" type="Label" parent="Dinger" unique_id=936602680]
+layout_mode = 2
+text = "Reality check every:"
+
+[node name="Minutes" type="SpinBox" parent="Dinger" unique_id=1733854408]
+layout_mode = 2
+min_value = 1.0
+value = 15.0
+rounded = true
+
+[node name="Label2" type="Label" parent="Dinger" unique_id=1267280492]
+layout_mode = 2
+text = "minutes"
+
+[node name="Visual Minutes" type="ProgressBar" parent="Dinger" unique_id=180547244]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+rounded = true
+show_percentage = false
+
+[node name="ToggleRealityBtn" type="Button" parent="Dinger" unique_id=1862287391]
+layout_mode = 2
+text = "Start/Stop"
