@@ -1,64 +1,84 @@
 extends Node2D
 
 @onready var sprite: Sprite2D = $Sprite2D
-var visible_window: bool = true
+var is_transparent: bool = true
 
 func _ready() -> void:
-	toggle_transparency()
-	update_click_boundary()
-#	toggle_fullscreen()
+	apply_transparency(is_transparent)
 
 func update_click_boundary() -> void:
-	'Arrange the click-through for the pixels outside our pet'
-	if sprite.texture:
-		# Get the pixel data from your sprite image
-		var img: Image = sprite.texture.get_image()
+	if not sprite or not sprite.texture:
+		DisplayServer.window_set_mouse_passthrough([])
+		return
 		
-		# Create a bounding bitmap using the alpha/transparency layer of your artwork
-		var bitmap: BitMap = BitMap.new()
-		bitmap.create_from_image_alpha(img)
+	var img: Image = sprite.texture.get_image()
+	var bitmap: BitMap = BitMap.new()
+	bitmap.create_from_image_alpha(img)
+	
+	var polygons: Array[PackedVector2Array] = bitmap.opaque_to_polygons(
+		Rect2(Vector2.ZERO, img.get_size()), 
+		0.1
+	)
+	
+	if polygons.size() > 0:
+		var local_poly: PackedVector2Array = polygons[0]
+		var window_poly: PackedVector2Array = []
 		
-		# Trace a polygon wireframe snugly around the opaque pixels of your artwork
-		var polygons: Array[PackedVector2Array] = bitmap.opaque_to_polygons(
-			Rect2(Vector2.ZERO, img.get_size()), 
-			0.1 # Tolerance setting: Lower means a tighter, more precise click fit
-		)
+		# Offset for center if sprite is centered
+		var origin_offset: Vector2 = -(img.get_size() / 2.0) if sprite.centered else Vector2.ZERO
 		
-		# Translate the localized sprite polygon coordinates relative to the master system window
-		if polygons.size() > 0:
-			var local_poly: PackedVector2Array = polygons[0]
-			var window_poly: PackedVector2Array = []
+		for point in local_poly:
+			# Convert local sprite pixel position to global/viewport coordinates
+			var global_pt: Vector2 = sprite.to_global(point + origin_offset)
+			# Convert viewport coordinates to OS window pixel coordinates
+			var window_pt: Vector2 = get_viewport().get_final_transform() * global_pt
+			window_poly.append(window_pt)
 			
-			# Compensate for where your sprite is sitting relative to the origin point
-			var offset: Vector2 = sprite.global_position - (img.get_size() / 2.0) if sprite.centered else sprite.global_position
-			
-			for point in local_poly:
-				window_poly.append(point + offset)
-				
-			# Hand the polygon mask directly over to Windows/Mac/Linux window manager
-			DisplayServer.window_set_mouse_passthrough(window_poly)
-		else:
-			# If your sprite vanishes or is empty, make the entire window click-through
-			DisplayServer.window_set_mouse_passthrough([])
-
-func toggle_fullscreen() -> void:
-	'Toggles fullscreen'
-	var current_mode = DisplayServer.window_get_mode()
-	if current_mode == DisplayServer.WINDOW_MODE_FULLSCREEN:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		DisplayServer.window_set_mouse_passthrough(window_poly)
 	else:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		# Empty array disables passthrough (whole window accepts clicks)
+		DisplayServer.window_set_mouse_passthrough([])
+
+func apply_transparency(transparent: bool) -> void:
+	# 1. Update viewport background
+	get_viewport().transparent_bg = transparent
+	get_tree().root.transparent_bg = transparent
+	
+	# 2. Update window flags
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, transparent)
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_ALWAYS_ON_TOP, transparent)
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_TRANSPARENT, transparent)
+	
+	# 3. Update mouse passthrough
+	if transparent:
+		# Defer boundary update to ensure window size & transforms have settled
+		update_click_boundary.call_deferred()
+	else:
+		# In opaque/windowed mode, disable passthrough so window & titlebar are clickable
+		DisplayServer.window_set_mouse_passthrough([])
 
 func toggle_transparency() -> void:
-	get_tree().root.transparent_bg = visible_window
-	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, visible_window)
-	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_ALWAYS_ON_TOP, visible_window)
-	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_TRANSPARENT, visible_window)
-
+	is_transparent = !is_transparent
+	apply_transparency(is_transparent)
 
 func _on_pet_clicked(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			visible_window = !visible_window
 			toggle_transparency()
 			get_viewport().set_input_as_handled() 
+
+"""
+  ### Review the Summary of Changes:
+
+  1. Dynamic Passthrough Management (node_2d.gd:42-58):
+      • Calling DisplayServer.window_set_mouse_passthrough([])
+      file:///C:/Users/mordor/Godot/pet-project/node_2d.gd#L58 when switching to
+      opaque/windowed mode, ensuring the entire window, borders, and pet remain clickable.
+      • Calling node_2d.gd:9-40 via .call_deferred() when switching to transparent mode so
+      the mask accurately bounds the pet.
+  2. Accurate Coordinates (node_2d.gd:30-36):
+      • Converts the sprite's polygon vertices using sprite.to_global() and get_viewport().
+      get_final_transform(), preventing offset errors caused by scaling or viewport stretch.
+  3. State Consistency:
+      • Uses is_transparent to clearly track whether the desktop pet overlay mode is active.
+"""
