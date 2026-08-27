@@ -1,10 +1,18 @@
 extends Node2D
 
 @onready var sprite: Sprite2D = $Sprite2D
+@onready var buzz_timer: Timer = $BuzzTimer
+@onready var buzz_progress: ProgressBar = $"UI/Dinger/Visual Minutes"
+@onready var buzz_minutes: Range = $UI/Dinger/Minutes
+@onready var ringer: AudioStreamPlayer2D = $Ringer
 var is_transparent: bool = true
 
 func _ready() -> void:
 	apply_transparency(is_transparent)
+
+func _process(_delta: float) -> void:
+	if !buzz_timer.is_stopped():
+		buzz_progress.value = 100 / buzz_minutes.value * (buzz_timer.time_left / 60)
 
 func update_click_boundary() -> void:
 	if not sprite or not sprite.texture:
@@ -82,7 +90,17 @@ func _on_pet_clicked(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
   3. State Consistency:
       • Uses is_transparent to clearly track whether the desktop pet overlay mode is active.
 """
-
+func play_ding() -> void:
+	ringer.play()
 
 func _on_ui_reality_check_toggle() -> void:
-	pass # Replace with function body.
+	buzz_timer.set_wait_time($UI/Dinger/Minutes.value * 60)
+	if buzz_timer.is_stopped():
+		buzz_timer.start()
+	else:
+		buzz_timer.stop()
+
+
+func _on_buzz_timer_timeout() -> void:
+	play_ding()
+	buzz_timer.start()

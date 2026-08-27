@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://ddounavjicruc" path="res://node_2d.gd" id="1_0e48y"]
 [ext_resource type="Texture2D" uid="uid://el3gdny7adw0" path="res://icon.svg" id="2_epypp"]
 [ext_resource type="PackedScene" uid="uid://clwdv7k6kbqqq" path="res://ui.tscn" id="3_epypp"]
+[ext_resource type="AudioStream" uid="uid://dg57joe6frvqj" path="res://media/mixkit-bell-of-promise-930-v2.wav" id="4_0hol4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0e48y"]
 size = Vector2(124, 124)
@@ -22,5 +23,11 @@ shape = SubResource("RectangleShape2D_0e48y")
 
 [node name="UI" parent="." unique_id=1708106587 instance=ExtResource("3_epypp")]
 
+[node name="BuzzTimer" type="Timer" parent="." unique_id=1446209652]
+
+[node name="Ringer" type="AudioStreamPlayer2D" parent="." unique_id=903495841]
+stream = ExtResource("4_0hol4")
+
 [connection signal="input_event" from="Sprite2D/Area2D" to="." method="_on_pet_clicked"]
 [connection signal="reality_check_toggle" from="UI" to="." method="_on_ui_reality_check_toggle"]
+[connection signal="timeout" from="BuzzTimer" to="." method="_on_buzz_timer_timeout"]
