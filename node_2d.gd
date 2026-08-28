@@ -4,11 +4,14 @@ extends Node2D
 @onready var buzz_timer: Timer = $BuzzTimer
 @onready var buzz_progress: ProgressBar = $"UI/Dinger/Visual Minutes"
 @onready var buzz_minutes: Range = $UI/Dinger/Minutes
-@onready var ringer: AudioStreamPlayer2D = $Ringer
+@onready var ringer: AudioStreamPlayer = $Ringer
 var is_transparent: bool = true
 
 func _ready() -> void:
 	apply_transparency(is_transparent)
+	OS.low_processor_usage_mode = true
+	Engine.max_fps = 60 # make sure we don't clog the GPU with 
+						# the transparency calculations
 
 func _process(_delta: float) -> void:
 	if !buzz_timer.is_stopped():
@@ -75,21 +78,7 @@ func _on_pet_clicked(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 			toggle_transparency()
 			get_viewport().set_input_as_handled() 
 
-"""
-  ### Review the Summary of Changes:
 
-  1. Dynamic Passthrough Management (node_2d.gd:42-58):
-      • Calling DisplayServer.window_set_mouse_passthrough([])
-      file:///C:/Users/mordor/Godot/pet-project/node_2d.gd#L58 when switching to
-      opaque/windowed mode, ensuring the entire window, borders, and pet remain clickable.
-      • Calling node_2d.gd:9-40 via .call_deferred() when switching to transparent mode so
-      the mask accurately bounds the pet.
-  2. Accurate Coordinates (node_2d.gd:30-36):
-      • Converts the sprite's polygon vertices using sprite.to_global() and get_viewport().
-      get_final_transform(), preventing offset errors caused by scaling or viewport stretch.
-  3. State Consistency:
-      • Uses is_transparent to clearly track whether the desktop pet overlay mode is active.
-"""
 func play_ding() -> void:
 	ringer.play()
 
@@ -99,8 +88,8 @@ func _on_ui_reality_check_toggle() -> void:
 		buzz_timer.start()
 	else:
 		buzz_timer.stop()
+		buzz_progress.value = 0 # reset it to zero, no need to implement "pause".
 
 
 func _on_buzz_timer_timeout() -> void:
 	play_ding()
-	buzz_timer.start()

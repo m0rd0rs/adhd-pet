@@ -12,7 +12,7 @@ size = Vector2(124, 124)
 script = ExtResource("1_0e48y")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1785164922]
-position = Vector2(1798, 970)
+position = Vector2(1847, 1010)
 texture = ExtResource("2_epypp")
 
 [node name="Area2D" type="Area2D" parent="Sprite2D" unique_id=504680869]
@@ -25,7 +25,7 @@ shape = SubResource("RectangleShape2D_0e48y")
 
 [node name="BuzzTimer" type="Timer" parent="." unique_id=1446209652]
 
-[node name="Ringer" type="AudioStreamPlayer2D" parent="." unique_id=903495841]
+[node name="Ringer" type="AudioStreamPlayer" parent="." unique_id=2126930993]
 stream = ExtResource("4_0hol4")
 
 [connection signal="input_event" from="Sprite2D/Area2D" to="." method="_on_pet_clicked"]
