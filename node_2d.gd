@@ -1,6 +1,6 @@
 extends Node2D
 
-@onready var sprite: Sprite2D = $Sprite2D
+@onready var sprite: AnimatedSprite2D = $Pet
 @onready var buzz_timer: Timer = $BuzzTimer
 @onready var buzz_progress: ProgressBar = $"UI/Dinger/Visual Minutes"
 @onready var buzz_minutes: Range = $UI/Dinger/Minutes
@@ -12,17 +12,26 @@ func _ready() -> void:
 	OS.low_processor_usage_mode = true
 	Engine.max_fps = 60 # make sure we don't clog the GPU with 
 						# the transparency calculations
+	sprite.set_flip_h(true)
+	sprite.play(&"idle")
 
 func _process(_delta: float) -> void:
 	if !buzz_timer.is_stopped():
 		buzz_progress.value = 100 / buzz_minutes.value * (buzz_timer.time_left / 60)
 
 func update_click_boundary() -> void:
-	if not sprite or not sprite.texture:
+	if not sprite or not sprite.sprite_frames.get_frame_texture(sprite.animation, sprite.frame):
 		DisplayServer.window_set_mouse_passthrough([])
 		return
-		
-	var img: Image = sprite.texture.get_image()
+
+	var img: Image = sprite.sprite_frames.get_frame_texture(sprite.animation, sprite.frame).get_image()
+	
+	# Flip the image to match the AnimatedSprite2D's visual orientation
+	if sprite.flip_h:
+		img.flip_x()
+	if sprite.flip_v:
+		img.flip_y()
+
 	var bitmap: BitMap = BitMap.new()
 	bitmap.create_from_image_alpha(img)
 	

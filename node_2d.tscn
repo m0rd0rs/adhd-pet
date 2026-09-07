@@ -1,24 +1,77 @@
 [gd_scene format=3 uid="uid://cfd5c8q2u0cds"]
 
 [ext_resource type="Script" uid="uid://ddounavjicruc" path="res://node_2d.gd" id="1_0e48y"]
-[ext_resource type="Texture2D" uid="uid://el3gdny7adw0" path="res://icon.svg" id="2_epypp"]
+[ext_resource type="Texture2D" uid="uid://b88ddkapa2cb1" path="res://media/Squirrel Sprite Sheet.png" id="2_0hol4"]
 [ext_resource type="PackedScene" uid="uid://clwdv7k6kbqqq" path="res://ui.tscn" id="3_epypp"]
 [ext_resource type="AudioStream" uid="uid://dg57joe6frvqj" path="res://media/mixkit-bell-of-promise-930-v2.wav" id="4_0hol4"]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_q6r6c"]
+atlas = ExtResource("2_0hol4")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kdubu"]
+atlas = ExtResource("2_0hol4")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d21ai"]
+atlas = ExtResource("2_0hol4")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rj586"]
+atlas = ExtResource("2_0hol4")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4d7sh"]
+atlas = ExtResource("2_0hol4")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ir8iy"]
+atlas = ExtResource("2_0hol4")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_hqns4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q6r6c")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kdubu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d21ai")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rj586")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4d7sh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ir8iy")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0e48y"]
-size = Vector2(124, 124)
+size = Vector2(22.25, 16)
 
 [node name="ADHD pet" type="Node2D" unique_id=769144320]
 script = ExtResource("1_0e48y")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1785164922]
-position = Vector2(1847, 1010)
-texture = ExtResource("2_epypp")
+[node name="Pet" type="AnimatedSprite2D" parent="." unique_id=475085244]
+position = Vector2(1790, 951)
+scale = Vector2(8, 8)
+sprite_frames = SubResource("SpriteFrames_hqns4")
+animation = &"idle"
+frame_progress = 0.42195144
 
-[node name="Area2D" type="Area2D" parent="Sprite2D" unique_id=504680869]
+[node name="Area2D" type="Area2D" parent="Pet" unique_id=504680869]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D/Area2D" unique_id=1903859968]
-position = Vector2(0, -1)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Pet/Area2D" unique_id=1903859968]
+position = Vector2(-0.125, 8.25)
 shape = SubResource("RectangleShape2D_0e48y")
 
 [node name="UI" parent="." unique_id=1708106587 instance=ExtResource("3_epypp")]
@@ -28,6 +81,6 @@ shape = SubResource("RectangleShape2D_0e48y")
 [node name="Ringer" type="AudioStreamPlayer" parent="." unique_id=2126930993]
 stream = ExtResource("4_0hol4")
 
-[connection signal="input_event" from="Sprite2D/Area2D" to="." method="_on_pet_clicked"]
+[connection signal="input_event" from="Pet/Area2D" to="." method="_on_pet_clicked"]
 [connection signal="reality_check_toggle" from="UI" to="." method="_on_ui_reality_check_toggle"]
 [connection signal="timeout" from="BuzzTimer" to="." method="_on_buzz_timer_timeout"]
