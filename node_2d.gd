@@ -5,9 +5,18 @@ extends Node2D
 @onready var buzz_progress: ProgressBar = $"UI/Dinger/Visual Minutes"
 @onready var buzz_minutes: Range = $UI/Dinger/Minutes
 @onready var ringer: AudioStreamPlayer = $Ringer
+@onready var speech_label: Label = $Cheer
 var is_transparent: bool = true
+var active_tween: Tween
+var messages: Array[String] = [
+	"Keep going! You're doing great.",
+	"Remember to hydrate!",
+	"Take a quick stretch break.",
+	"One step at a time!"
+]
 
 func _ready() -> void:
+	speech_label.modulate.a = 0.0
 	apply_transparency(is_transparent)
 	OS.low_processor_usage_mode = true
 	Engine.max_fps = 60 # make sure we don't clog the GPU with 
@@ -102,3 +111,15 @@ func _on_ui_reality_check_toggle() -> void:
 
 func _on_buzz_timer_timeout() -> void:
 	play_ding()
+	show_cheer_message(messages.pick_random())
+
+func show_cheer_message(text: String) -> void:
+	speech_label.text = text
+	
+	if active_tween and active_tween.is_running():
+		active_tween.kill()
+
+	active_tween = create_tween()
+	active_tween.tween_property(speech_label, "modulate:a", 1.0, 0.3)
+	active_tween.tween_interval(3.0)
+	active_tween.tween_property(speech_label, "modulate:a", 0.0, 0.5)

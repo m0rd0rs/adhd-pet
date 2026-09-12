@@ -5,6 +5,15 @@
 [ext_resource type="PackedScene" uid="uid://clwdv7k6kbqqq" path="res://ui.tscn" id="3_epypp"]
 [ext_resource type="AudioStream" uid="uid://dg57joe6frvqj" path="res://media/mixkit-bell-of-promise-930-v2.wav" id="4_0hol4"]
 
+[sub_resource type="SystemFont" id="SystemFont_0hol4"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_q6r6c"]
+font = SubResource("SystemFont_0hol4")
+font_size = 58
+outline_size = 1
+outline_color = Color(0, 0, 0, 1)
+shadow_color = Color(0, 0, 0, 1)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_q6r6c"]
 atlas = ExtResource("2_0hol4")
 region = Rect2(0, 0, 32, 32)
@@ -56,13 +65,22 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0e48y"]
-size = Vector2(22.25, 16)
+size = Vector2(22.25, 20.125)
 
 [node name="ADHD pet" type="Node2D" unique_id=769144320]
 script = ExtResource("1_0e48y")
 
+[node name="Cheer" type="Label" parent="." unique_id=299132104]
+offset_left = 973.0
+offset_top = 731.0
+offset_right = 1856.0
+offset_bottom = 850.0
+label_settings = SubResource("LabelSettings_q6r6c")
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="Pet" type="AnimatedSprite2D" parent="." unique_id=475085244]
-position = Vector2(1790, 951)
+position = Vector2(1769, 922)
 scale = Vector2(8, 8)
 sprite_frames = SubResource("SpriteFrames_hqns4")
 animation = &"idle"
@@ -71,7 +89,7 @@ frame_progress = 0.42195144
 [node name="Area2D" type="Area2D" parent="Pet" unique_id=504680869]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Pet/Area2D" unique_id=1903859968]
-position = Vector2(-0.125, 8.25)
+position = Vector2(-0.125, 6.1875)
 shape = SubResource("RectangleShape2D_0e48y")
 
 [node name="UI" parent="." unique_id=1708106587 instance=ExtResource("3_epypp")]
