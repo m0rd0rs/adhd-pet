@@ -6,6 +6,7 @@ extends Node2D
 @onready var buzz_minutes: Range = $UI/Dinger/Minutes
 @onready var ringer: AudioStreamPlayer = $Ringer
 @onready var speech_label: Label = $Cheer
+
 var is_transparent: bool = true
 var active_tween: Tween
 var messages: Array[String] = [
@@ -28,7 +29,11 @@ func _process(_delta: float) -> void:
 	if !buzz_timer.is_stopped():
 		buzz_progress.value = 100 / buzz_minutes.value * (buzz_timer.time_left / 60)
 
-func update_click_boundary() -> void:
+func update_click_boundary(include_speech: bool = false) -> void:
+	if not is_transparent:
+		DisplayServer.window_set_mouse_passthrough([])
+		return
+
 	if not sprite or not sprite.sprite_frames.get_frame_texture(sprite.animation, sprite.frame):
 		DisplayServer.window_set_mouse_passthrough([])
 		return
@@ -55,33 +60,52 @@ func update_click_boundary() -> void:
 		
 		# Offset for center if sprite is centered
 		var origin_offset: Vector2 = -(img.get_size() / 2.0) if sprite.centered else Vector2.ZERO
+		var xform: Transform2D = get_viewport().get_final_transform()
 		
 		for point in local_poly:
 			# Convert local sprite pixel position to global/viewport coordinates
 			var global_pt: Vector2 = sprite.to_global(point + origin_offset)
 			# Convert viewport coordinates to OS window pixel coordinates
-			var window_pt: Vector2 = get_viewport().get_final_transform() * global_pt
+			var window_pt: Vector2 = xform * global_pt
 			window_poly.append(window_pt)
-			
-		DisplayServer.window_set_mouse_passthrough(window_poly)
+		
+		if include_speech and speech_label:
+			var label_rect: Rect2 = speech_label.get_global_rect()
+			var label_pts := PackedVector2Array([
+				xform * label_rect.position,
+				xform * Vector2(label_rect.end.x, label_rect.position.y),
+				xform * label_rect.end,
+				xform * Vector2(label_rect.position.x, label_rect.end.y)
+			])
+			var all_pts := PackedVector2Array()
+			all_pts.append_array(window_poly)
+			all_pts.append_array(label_pts)
+			var combined_poly: PackedVector2Array = Geometry2D.convex_hull(all_pts)
+			DisplayServer.window_set_mouse_passthrough(combined_poly)
+		else:
+			DisplayServer.window_set_mouse_passthrough(window_poly)
 	else:
 		# Empty array disables passthrough (whole window accepts clicks)
 		DisplayServer.window_set_mouse_passthrough([])
 
 func apply_transparency(transparent: bool) -> void:
-	# 1. Update viewport background
+	# Update viewport background
 	get_viewport().transparent_bg = transparent
 	get_tree().root.transparent_bg = transparent
 	
-	# 2. Update window flags
+	# Update window flags
 	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, transparent)
 	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_ALWAYS_ON_TOP, transparent)
 	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_TRANSPARENT, transparent)
 	
-	# 3. Update mouse passthrough
+	# Toggle UI visibility in transparent vs windowed mode
+	$UI.visible = !transparent
+
+	# Update mouse passthrough
 	if transparent:
+		var has_speech: bool = speech_label != null and speech_label.modulate.a > 0.0
 		# Defer boundary update to ensure window size & transforms have settled
-		update_click_boundary.call_deferred()
+		update_click_boundary.call_deferred(has_speech)
 	else:
 		# In opaque/windowed mode, disable passthrough so window & titlebar are clickable
 		DisplayServer.window_set_mouse_passthrough([])
@@ -119,7 +143,14 @@ func show_cheer_message(text: String) -> void:
 	if active_tween and active_tween.is_running():
 		active_tween.kill()
 
+	if is_transparent:
+		update_click_boundary(true)
+
 	active_tween = create_tween()
 	active_tween.tween_property(speech_label, "modulate:a", 1.0, 0.3)
 	active_tween.tween_interval(3.0)
 	active_tween.tween_property(speech_label, "modulate:a", 0.0, 0.5)
+	active_tween.tween_callback(func():
+		if is_transparent:
+			update_click_boundary(false)
+	)
