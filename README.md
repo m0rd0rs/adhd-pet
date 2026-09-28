@@ -85,10 +85,13 @@ func toggle_fullscreen() -> void:
 ```
 
 ### ToDo:
+
 - Test on several Linux distros.
 
 ### Acknowledgements
 
-[Free sound effects - bells](https://mixkit.co/free-sound-effects/bell/)
-[Squirrel sprite map from Elthen itch.io](https://elthen.itch.io/2d-pixel-art-squirrel-sprites)
+- [Free sound effects - bells](https://mixkit.co/free-sound-effects/bell/)
+- [Squirrel sprite map from Elthen itch.io](https://elthen.itch.io/2d-pixel-art-squirrel-sprites)
+- [Kenney's Godot UI theme](https://azagaya.itch.io/kenneys-ui-theme)
 - License files in [media/](media/)
+

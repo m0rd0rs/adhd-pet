@@ -28,6 +28,10 @@ window/stretch/mode="viewport"
 window/stretch/aspect="expand"
 window/per_pixel_transparency/allowed=true
 
+[gui]
+
+theme/custom="uid://6shp5ck1tnja"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"
