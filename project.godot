@@ -13,7 +13,7 @@ config_version=5
 config/name="Pet Project"
 run/main_scene="uid://cfd5c8q2u0cds"
 config/features=PackedStringArray("4.6", "GL Compatibility")
-config/icon="res://icon.svg"
+config/icon="uid://l67viifygg6"
 
 [display]
 
