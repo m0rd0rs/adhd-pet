@@ -10,7 +10,7 @@ extends Node2D
 var is_transparent: bool = true
 var active_tween: Tween
 var messages: Array[String] = [
-	"Keep going! You're doing great.",
+	"Keep going!\nYou're doing great.",
 	"Remember to hydrate!",
 	"Take a quick stretch break.",
 	"One step at a time!"
@@ -50,10 +50,8 @@ func update_click_boundary(include_speech: bool = false) -> void:
 	bitmap.create_from_image_alpha(img)
 	
 	var polygons: Array[PackedVector2Array] = bitmap.opaque_to_polygons(
-		Rect2(Vector2.ZERO, img.get_size()), 
-		0.1
-	)
-	
+		Rect2(Vector2.ZERO, img.get_size()), 0.1)
+
 	if polygons.size() > 0:
 		var local_poly: PackedVector2Array = polygons[0]
 		var window_poly: PackedVector2Array = []

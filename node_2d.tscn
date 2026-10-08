@@ -73,7 +73,7 @@ script = ExtResource("1_0e48y")
 
 [node name="Cheer" type="Label" parent="." unique_id=299132104]
 offset_left = 740.0
-offset_top = 731.0
+offset_top = 644.0
 offset_right = 1856.0
 offset_bottom = 850.0
 label_settings = SubResource("LabelSettings_q6r6c")
